@@ -69,11 +69,11 @@ def data_visualization(X,X_outliers):
 
 def main():
     """Set K nearest neighbors to look at."""
-    k = 5
+    k = 15
 
     """Test data specificiations."""
     data_dim = 2
-    num_tests = 250
+    num_tests = 1000
     num_outliers = 2
 
     mean = [1,1]
