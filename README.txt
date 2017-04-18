@@ -1,1 +1,1 @@
-This repository includes an ongoing comparison of implementations of the anomoly detection algorithm ranging from an all python implementation to one that uses KD trees and optimized numpy function.  Also an excersize in parallelization.
+This repository includes an ongoing comparison of implementations of the anomaly detection algorithm ranging from an all python implementation to one that uses KD trees and optimized numpy function.  Also an exercise in parallelization.
