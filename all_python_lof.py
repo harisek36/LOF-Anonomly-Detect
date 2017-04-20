@@ -100,7 +100,6 @@ class LOF:
         return local_outlier_factor(min_pts, instance, self.instances, distance_function=self.distance_function)
 
 def k_distance(k, instance, instances, distance_function=distance_euclidean):
-    #TODO: implement caching
     """Computes the k-distance of instance as defined in paper. It also gatheres the set of k-distance neighbours.
     Returns: (k-distance, k-distance neighbours)
     Signature: (int, (attr1, attr2, ...), ((attr_1_1, ...),(attr_2_1, ...), ...)) -> (float, ((attr_j_1, ...),(attr_k_1, ...), ...))"""
@@ -168,7 +167,9 @@ def outliers(k, instances, **kwargs):
         if i % 10 == 0: print ("%s percent done." % ((float(i)/(len(instances))) * 100))
     outliers.sort(key=lambda o: o["lof"], reverse=True)
     return outliers
+
 """
+#Option to Inlcude Visualization
 def data_visualization(X,X_o):
    
     plt.scatter(X[:,0], X[:,1], c='yellow')
@@ -176,6 +177,7 @@ def data_visualization(X,X_o):
     
     plt.show()
 """
+
 def main():
     num_tests = 250
     num_outliers = 2

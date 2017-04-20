@@ -14,7 +14,6 @@ from dgen import data_styles
 """LOF function takes data set and K value and returns predicted outliers. 
    I used http://www.bistaumanga.com.np/blog/lof/ to help me figure out how to
    apply KD trees.""" 
-   
 def lof(X, k, outlier_threshold = 1.5, verbose = False):
 
     """Knn with KD trees"""
