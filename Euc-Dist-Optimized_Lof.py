@@ -1,45 +1,42 @@
 """
 Dylan Slack
-
-More efficient version of LOF using KD trees.
+Numpy optimized version of LOF using euclidean distance to determine k nearest neighbors
 """
 
 import numpy as np
 import time
-from sklearn.neighbors import KDTree
+from sklearn.neighbors import DistanceMetric
 from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
 from dgen import data_styles
 
 """LOF function takes data set and K value and returns predicted outliers. 
-   I used http://www.bistaumanga.com.np/blog/lof/ to help me figure out how to
-   apply KD trees.""" 
+   I used http://www.bistaumanga.com.np/blog/lof/ to help me figure out how to 
+   use a Euclidean distance metric with sklearn.""" 
 def lof(X, k, outlier_threshold = 1.5, verbose = False):
+    """Determine nearest neighbors using euclidean distance search."""
+    dist = DistanceMetric.get_metric('euclidean').pairwise(X)
+    sorted_d = np.argsort(dist, axis=1)
+    k_nearest = sorted_d[:,1 : k + 1] 
 
-    """Knn with KD trees"""
-    start = time.time()
-    BT = KDTree(X, leaf_size=k, p=2)
+    """Reachability distance for all points."""
+    radius = np.linalg.norm(X - X[k_nearest[:, -1]], axis = 1) 
 
-    distance, index = BT.query(X, k)
-    distance, index = distance[:, 1:], index[:, 1:] 
-    radius = distance[:, -1]
-
-    """Calculate LRD."""
-    LRD = np.mean(np.maximum(distance, radius[index]), axis=1)
+    """Local reachability distance computation."""
+    LRD = []
+    for i in range(k_nearest.shape[0]):
+        LRD.append(np.mean(np.maximum(dist[i, k_nearest[i]], radius[k_nearest[i]])))
     r = 1. / np.array(LRD)
 
-    """Calculate outlier score."""
-    outlier_score = np.sum(r[index], axis=1) / np.array(r, dtype=np.float16)
+    """Compare reachability densities to generate outlier scores."""
+    outlier_score = np.sum(r[k_nearest], axis = 1)/ np.array(r, dtype = np.float16)
     outlier_score *= 1. / k
-
-    # print ('Compute time: %g seconds.' % ((time.time() - start)))
 
     if verbose: print ("Recording all outliers with outlier score greater than %s."\
      % (outlier_threshold))
 
+    """Find outliers greater than user given threshold."""
     outliers = []
-    """ Could parallelize this for loop, but really not worth the overhead...
-        Would get insignificant performance gain."""
     for i, score in enumerate(outlier_score):
         if score > outlier_threshold:
             outliers.append([X[i], score])
@@ -69,11 +66,11 @@ def data_visualization(X,X_outliers):
 
 def main():
     """Set K nearest neighbors to look at."""
-    k = 15
+    k = 5
 
     """Test data specificiations."""
     data_dim = 2
-    num_tests = 1000
+    num_tests = 400
     num_outliers = 2
 
     mean = [1,1]
@@ -90,8 +87,8 @@ def main():
     print ("Finding outliers in %s values took %s seconds." % (len(X),time.time() - start))
     print ("---------------------")
 
-    if data_dim == 2:
-        data_visualization(X, predicted_outliers) 
+    #if data_dim == 2:
+        #data_visualization(X, predicted_outliers) 
 
 if __name__ == "__main__":
     main()

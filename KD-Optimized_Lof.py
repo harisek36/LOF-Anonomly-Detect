@@ -1,7 +1,6 @@
 """
 Dylan Slack
-
-More efficient version of LOF using KD trees.
+Numpy optimized LOF algorithm using KD trees to replace euclidean search.
 """
 
 import numpy as np
@@ -10,10 +9,7 @@ from sklearn.neighbors import KDTree
 from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
 from dgen import data_styles
-
-"""LOF function takes data set and K value and returns predicted outliers. 
-   I used http://www.bistaumanga.com.np/blog/lof/ to help me figure out how to
-   apply KD trees.""" 
+   
 def lof(X, k, outlier_threshold = 1.5, verbose = False):
 
     """Knn with KD trees"""
@@ -69,11 +65,11 @@ def data_visualization(X,X_outliers):
 
 def main():
     """Set K nearest neighbors to look at."""
-    k = 5
+    k = 10
 
     """Test data specificiations."""
     data_dim = 2
-    num_tests = 250
+    num_tests = 10000
     num_outliers = 2
 
     mean = [1,1]

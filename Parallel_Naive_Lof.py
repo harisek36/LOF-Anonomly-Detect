@@ -1,15 +1,16 @@
-
 """
 NOTE: MUCH OF THIS CODE IS TAKEN FROM https://github.com/damjankuznar/pylof/blob/master/lof.py
-
-
+I adapted the code to make it parallelizable.
 """
+
 from __future__ import division
 import warnings
 from dgen import data_styles
 import time
 import numpy as np
-#from matplotlib import pyplot as plt
+from joblib import Parallel, delayed
+from multiprocessing import cpu_count
+from matplotlib import pyplot as plt
 
 def distance_euclidean(instance1, instance2):
     """Computes the distance between two instances. Instances should be tuples of equal length.
@@ -100,6 +101,7 @@ class LOF:
         return local_outlier_factor(min_pts, instance, self.instances, distance_function=self.distance_function)
 
 def k_distance(k, instance, instances, distance_function=distance_euclidean):
+    #TODO: implement caching
     """Computes the k-distance of instance as defined in paper. It also gatheres the set of k-distance neighbours.
     Returns: (k-distance, k-distance neighbours)
     Signature: (int, (attr1, attr2, ...), ((attr_1_1, ...),(attr_2_1, ...), ...)) -> (float, ((attr_j_1, ...),(attr_k_1, ...), ...))"""
@@ -156,30 +158,33 @@ def local_outlier_factor(min_pts, instance, instances, **kwargs):
 def outliers(k, instances, **kwargs):
     """Simple procedure to identify outliers in the dataset."""
     instances_value_backup = instances
+    """PARALLEL CALL HERE."""
+    r = Parallel(n_jobs=-1)(delayed(outliers_helper)(instance,i,k,instances_value_backup,**kwargs)\
+        for i, instance in enumerate(instances_value_backup))
     outliers = []
-    for i, instance in enumerate(instances_value_backup):
-        instances = list(instances_value_backup)
-        instances.remove(instance)
-        l = LOF(instances, **kwargs)
-        value = l.local_outlier_factor(k, instance)
-        if value > 2:
-            outliers.append({"lof": value, "instance": instance, "index": i})
-        if i % 10 == 0: print ("%s percent done." % ((float(i)/(len(instances))) * 100))
-    outliers.sort(key=lambda o: o["lof"], reverse=True)
+    [outliers.append(val) for val in r if val != []]
+    #outliers = sum(outliers,[])
+    #outliers.sort(key=lambda o: o["lof"], reverse=True)
     return outliers
 
-"""
-#Option to Inlcude Visualization
+def outliers_helper(instance,i,k,instances_value_backup,**kwargs):
+    outliers = []
+    instances = list(instances_value_backup)
+    instances.remove(instance)
+    l = LOF(instances, **kwargs)
+    value = l.local_outlier_factor(k, instance)
+    if value > 2:
+        outliers.append({"lof": value, "instance": instance, "index": i})
+    return outliers
+
 def data_visualization(X,X_o):
-   
     plt.scatter(X[:,0], X[:,1], c='yellow')
     plt.scatter(X_o[:,0], X_o[:,1], c='red')
-    
     plt.show()
-"""
+
 
 def main():
-    num_tests = 250
+    num_tests = 100
     num_outliers = 2
     data_dim = 2
     X = data_styles.random_clusters(num_tests,num_outliers,data_dim)
@@ -187,10 +192,15 @@ def main():
 
     start = time.time()
     o = outliers(5,X_l)
-    print ("Computing %s outliers took %s seconds." % (num_tests, time.time() - start))
-    o = [o[i]['instance'] for i in range(len(o))]
-    
-    #data_visualization(X,np.array(o))
+    print ("Computing %s outliers took %s seconds with %s cores." % (num_tests, time.time() - start, cpu_count()))
+    print o
+    new_o = []
+    for i, val in enumerate(o):
+        new_o.append(val[0]['instance'])
+
+    print new_o
+
+    data_visualization(X,np.array(new_o))
 
 if __name__ == "__main__":
     main()
