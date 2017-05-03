@@ -1,6 +1,7 @@
 """
 NOTE: MUCH OF THIS CODE IS TAKEN FROM https://github.com/damjankuznar/pylof/blob/master/lof.py
 I adapted the code to make it parallelizable.
+:license: GNU GPL v2, see LICENSE for more details.
 """
 
 from __future__ import division

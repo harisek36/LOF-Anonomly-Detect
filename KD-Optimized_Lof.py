@@ -1,6 +1,8 @@
 """
-Dylan Slack
+Copyright Dylan Slack
 Numpy optimized LOF algorithm using KD trees to replace euclidean search.
+
+:license: GNU GPL v2, see LICENSE for more details.
 """
 
 import numpy as np

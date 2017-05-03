@@ -1,6 +1,7 @@
 """
-Dylan Slack
-Numpy optimized version of LOF using euclidean distance to determine k nearest neighbors
+Numpy optimized version of LOF using euclidean distance to determine k nearest neighbors.
+
+:license: GNU GPL v2
 """
 
 import numpy as np
