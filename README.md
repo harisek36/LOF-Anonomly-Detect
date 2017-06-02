@@ -6,6 +6,10 @@ This repository includes four different implementations of the local outlier fac
 
 * **Dylan Slack** 
 
+## References
+
+I include a full list of references in the attached paper.  However please not that I the naive version of LOF is taken from https://github.com/damjankuznar/pylof/blob/master/lof.py.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
