@@ -8,7 +8,7 @@ This repository includes four different implementations of the local outlier fac
 
 ## References
 
-I include a full list of references in the attached paper.  However please not that naive_lof.py is taken from https://github.com/damjankuznar/pylof/blob/master/lof.py.  All credit goes to him for that implementation.
+I include a full list of references in the attached paper.  However please note that naive_lof.py is taken from https://github.com/damjankuznar/pylof/blob/master/lof.py.  All credit goes to him for that implementation.
 
 ## License
 
